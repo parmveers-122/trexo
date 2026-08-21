@@ -1,0 +1,4 @@
+cd "/Users/parmveertrexo/Claude Projects/trexo-clinic-trials"
+git remote add origin https://github.com/parmveers-122/trexo.git
+git branch -M main
+git push -u origin main
