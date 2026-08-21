@@ -1,0 +1,132 @@
+import datetime
+
+from flask import Flask, flash, redirect, render_template, request, url_for
+
+import geocode
+import trial_email
+import trial_store
+
+app = Flask(__name__)
+app.secret_key = "dev-only-not-for-production"
+trial_store.init_db()
+
+
+@app.route("/")
+def clinic_directory():
+    lead_address = request.args.get("lead_address", "").strip()
+    lead_coords = None
+    address_not_found = False
+
+    if lead_address:
+        lead_coords = geocode.geocode_address(lead_address)
+        if not lead_coords:
+            address_not_found = True
+
+    clinics = []
+    for clinic in trial_store.CLINICS:
+        contact = trial_store.get_clinic_contact(clinic["id"])
+        distance_km = None
+        if lead_coords:
+            distance_km = geocode.haversine_km(
+                lead_coords[0], lead_coords[1], clinic["lat"], clinic["lon"]
+            )
+        clinics.append({
+            **clinic,
+            "contact": contact,
+            "trial_count": trial_store.count_trial_bookings_for_clinic(clinic["id"]),
+            "distance_km": distance_km,
+        })
+
+    if lead_coords:
+        clinics.sort(key=lambda c: c["distance_km"])
+
+    return render_template(
+        "clinics.html",
+        clinics=clinics,
+        lead_address=lead_address,
+        address_not_found=address_not_found,
+    )
+
+
+@app.route("/clinic/<clinic_id>/contact", methods=["POST"])
+def save_clinic_contact(clinic_id):
+    clinic = trial_store.get_clinic_by_id(clinic_id)
+    if not clinic:
+        flash("Unknown clinic.", "error")
+        return redirect(url_for("clinic_directory"))
+
+    trial_store.save_clinic_contact(
+        clinic_id,
+        request.form.get("email", "").strip(),
+        request.form.get("phone", "").strip(),
+        datetime.date.today().isoformat(),
+    )
+    flash(f"Contact info saved for {clinic['name']}.", "success")
+    return redirect(url_for("clinic_directory"))
+
+
+@app.route("/clinic/<clinic_id>/book-trial", methods=["GET", "POST"])
+def book_trial(clinic_id):
+    clinic = trial_store.get_clinic_by_id(clinic_id)
+    if not clinic:
+        flash("Unknown clinic.", "error")
+        return redirect(url_for("clinic_directory"))
+
+    if request.method == "POST":
+        lead_name = request.form.get("lead_name", "").strip()
+        if not lead_name:
+            flash("Lead/patient name is required.", "error")
+            return redirect(url_for("book_trial", clinic_id=clinic_id))
+
+        booking_id = trial_store.add_trial_booking(
+            clinic_id,
+            clinic["name"],
+            lead_name,
+            request.form.get("preferred_datetime", "").strip(),
+            request.form.get("lead_contact", "").strip(),
+            datetime.datetime.now().isoformat(timespec="minutes"),
+        )
+
+        if clinic.get("is_internal"):
+            # Our own office - no external clinic to email, just log the booking.
+            flash(f"Trial booked at {clinic['name']} for {lead_name}.", "success")
+            return redirect(url_for("trials_log"))
+
+        return redirect(url_for("trial_email_preview", booking_id=booking_id))
+
+    return render_template("book_trial.html", clinic=clinic)
+
+
+@app.route("/trial/<int:booking_id>/email")
+def trial_email_preview(booking_id):
+    booking = trial_store.get_trial_booking(booking_id)
+    if not booking:
+        flash("Booking not found.", "error")
+        return redirect(url_for("clinic_directory"))
+
+    contact = trial_store.get_clinic_contact(booking["clinic_id"])
+    subject, body = trial_email.render_trial_email(
+        booking["clinic_name"],
+        booking["lead_name"],
+        booking["preferred_datetime"],
+        booking["lead_contact"],
+    )
+    to_address = contact.get("email", "") or ""
+    return render_template(
+        "compose_trial_email.html",
+        booking=booking,
+        subject=subject,
+        body=body,
+        to_address=to_address,
+        mailto=trial_email.mailto_link(to_address, subject, body),
+    )
+
+
+@app.route("/trials")
+def trials_log():
+    bookings = trial_store.list_trial_bookings()
+    return render_template("trials_log.html", bookings=bookings)
+
+
+if __name__ == "__main__":
+    app.run(debug=True, port=8070, host='0.0.0.0')

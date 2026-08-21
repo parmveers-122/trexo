@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Book a Trial - {{ clinic.name }}{% endblock %}
+{% block content %}
+
+<a href="{{ url_for('clinic_directory') }}" class="back-link">&larr; Back to clinics</a>
+
+<h1>Book a Trial</h1>
+<p class="subtle">at {{ clinic.name }}</p>
+
+<form method="post" class="trial-form">
+  <label>Lead / patient name</label>
+  <input type="text" name="lead_name" placeholder="e.g. Jane Doe" required>
+
+  <label>Preferred date/time</label>
+  <input type="text" name="preferred_datetime" placeholder="e.g. Tues Aug 26, afternoon">
+
+  <label>Lead contact info</label>
+  <input type="text" name="lead_contact" placeholder="Phone or email">
+
+  <button type="submit" class="btn-primary">Generate Trial Request Email</button>
+</form>
+
+{% endblock %}

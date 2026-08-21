@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Clinics - Trial Booking{% endblock %}
+{% block content %}
+
+<h1>Clinic Network</h1>
+<p class="subtle">Book a device trial at one of our partner clinics for a lead.</p>
+
+<form method="get" class="lead-address-search">
+  <label>Find the nearest clinic to a lead's address</label>
+  <div class="lead-address-search-row">
+    <input type="text" name="lead_address" value="{{ lead_address }}" placeholder="e.g. 123 Main St, Vancouver, BC">
+    <button type="submit" class="btn-primary btn-small">Search</button>
+    {% if lead_address %}
+      <a href="{{ url_for('clinic_directory') }}" class="btn-link">Clear</a>
+    {% endif %}
+  </div>
+  {% if address_not_found %}
+    <p class="search-error">Couldn't find that address - try adding a city/province, or double-check the spelling.</p>
+  {% elif lead_address %}
+    <p class="subtle">Clinics below are sorted by distance from "{{ lead_address }}".</p>
+  {% endif %}
+</form>
+
+<div class="clinic-grid">
+  {% for clinic in clinics %}
+    <div class="clinic-card">
+      <div class="clinic-card-header">
+        <h2 class="clinic-name">{{ clinic.name }}</h2>
+        {% if clinic.trial_count %}
+          <span class="clinic-trial-badge">{{ clinic.trial_count }} booked</span>
+        {% endif %}
+      </div>
+
+      <div class="clinic-badge-row">
+        {% if clinic.device_size %}
+          <span class="clinic-device-size">{{ clinic.device_size }} Trexo</span>
+        {% endif %}
+        {% if clinic.free_trial %}
+          <span class="clinic-free-trial">Free Trial</span>
+        {% endif %}
+      </div>
+
+      <div class="clinic-address">{{ clinic.address }}</div>
+      {% if clinic.distance_km is not none %}
+        <div class="clinic-distance">{{ "%.1f"|format(clinic.distance_km) }} km from the address searched</div>
+      {% endif %}
+
+      {% if clinic.is_internal %}
+        <div class="clinic-contact-summary subtle">Our own office - no external contact needed.</div>
+      {% else %}
+        <div class="clinic-contact-summary">
+          {% if clinic.contact.email or clinic.contact.phone %}
+            {% if clinic.contact.email %}<div>{{ clinic.contact.email }}</div>{% endif %}
+            {% if clinic.contact.phone %}<div>{{ clinic.contact.phone }}</div>{% endif %}
+          {% else %}
+            <div class="subtle">No contact info on file yet</div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      <a href="{{ url_for('book_trial', clinic_id=clinic.id) }}" class="btn-primary">Book a Trial</a>
+
+      {% if not clinic.is_internal %}
+        <details class="edit-contact-toggle">
+          <summary>Edit contact info</summary>
+          <form method="post" action="{{ url_for('save_clinic_contact', clinic_id=clinic.id) }}" class="edit-contact-form">
+            <label>Email</label>
+            <input type="email" name="email" value="{{ clinic.contact.email or '' }}" placeholder="clinic@example.com">
+            <label>Phone</label>
+            <input type="text" name="phone" value="{{ clinic.contact.phone or '' }}" placeholder="(555) 555-5555">
+            <button type="submit" class="btn-primary btn-small">Save</button>
+          </form>
+        </details>
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

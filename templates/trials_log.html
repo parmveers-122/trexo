@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Booked Trials{% endblock %}
+{% block content %}
+
+<h1>Booked Trials</h1>
+<p class="subtle">{{ bookings|length }} trial{{ '' if bookings|length == 1 else 's' }} booked so far</p>
+
+<table class="worklist">
+  <thead>
+    <tr>
+      <th>Clinic</th>
+      <th>Lead</th>
+      <th>Preferred date/time</th>
+      <th>Lead contact</th>
+      <th>Booked on</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for b in bookings %}
+      <tr>
+        <td>{{ b.clinic_name }}</td>
+        <td>{{ b.lead_name }}</td>
+        <td>{{ b.preferred_datetime or '—' }}</td>
+        <td>{{ b.lead_contact or '—' }}</td>
+        <td>{{ b.created_at }}</td>
+        <td><a href="{{ url_for('trial_email_preview', booking_id=b.id) }}">View email</a></td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6">No trials booked yet.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

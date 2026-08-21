@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Trial Email - {{ booking.clinic_name }}{% endblock %}
+{% block content %}
+
+<a href="{{ url_for('clinic_directory') }}" class="back-link">&larr; Back to clinics</a>
+
+<h1>Trial Request Email</h1>
+<p class="subtle">{{ booking.clinic_name }} &middot; {{ booking.lead_name }}</p>
+<p class="subtle">This is a drafted email - review and edit before sending. Nothing sends automatically; clicking "Open in Email App" hands off to your own email client.</p>
+
+<form class="trial-email-form" onsubmit="return false;">
+  <label>To</label>
+  <input type="email" id="email-to" value="{{ to_address }}" placeholder="Enter the clinic's email address...">
+  {% if not to_address %}
+    <p class="subtle email-gmail-warning">No email on file for this clinic yet - add one from the clinic list, or just type it in here.</p>
+  {% endif %}
+
+  <label>Subject</label>
+  <input type="text" id="email-subject" value="{{ subject }}">
+
+  <label>Body</label>
+  <textarea id="email-body" rows="12">{{ body }}</textarea>
+
+  <button type="button" class="btn-primary" id="open-email-btn">Open in Email App</button>
+</form>
+
+<p class="subtle"><a href="{{ url_for('trials_log') }}">View all booked trials &rarr;</a></p>
+
+<script>
+  document.getElementById('open-email-btn').addEventListener('click', function () {
+    var to = document.getElementById('email-to').value.trim();
+    var subject = document.getElementById('email-subject').value;
+    var body = document.getElementById('email-body').value;
+    if (!to) {
+      alert('Enter the clinic\'s email address first.');
+      return;
+    }
+    window.location.href = 'mailto:' + to +
+      '?subject=' + encodeURIComponent(subject) +
+      '&body=' + encodeURIComponent(body);
+  });
+</script>
+
+{% endblock %}
