@@ -1,4 +1,5 @@
 import datetime
+import os
 
 from flask import Flask, flash, redirect, render_template, request, url_for
 
@@ -6,7 +7,11 @@ import geocode
 import trial_email
 import trial_store
 
-app = Flask(__name__)
+# Explicit absolute static folder path - Vercel's serverless runtime doesn't
+# always resolve Flask's default relative static path correctly, which is
+# why the CSS wasn't loading there.
+_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+app = Flask(__name__, static_folder=os.path.join(_BASE_DIR, "static"), static_url_path="/static")
 app.secret_key = "dev-only-not-for-production"
 trial_store.init_db()
 
