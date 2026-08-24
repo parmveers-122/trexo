@@ -83,12 +83,18 @@ def book_trial(clinic_id):
             flash("Lead/patient name is required.", "error")
             return redirect(url_for("book_trial", clinic_id=clinic_id))
 
+        preferred_dates = sorted({d for d in request.form.getlist("preferred_dates") if d.strip()})
+        if not preferred_dates:
+            flash("Pick at least one preferred date.", "error")
+            return redirect(url_for("book_trial", clinic_id=clinic_id))
+
         booking_id = trial_store.add_trial_booking(
             clinic_id,
             clinic["name"],
             lead_name,
-            request.form.get("preferred_datetime", "").strip(),
+            preferred_dates,
             request.form.get("lead_contact", "").strip(),
+            request.form.get("family_email", "").strip(),
             datetime.datetime.now().isoformat(timespec="minutes"),
         )
 
@@ -113,17 +119,20 @@ def trial_email_preview(booking_id):
     subject, body = trial_email.render_trial_email(
         booking["clinic_name"],
         booking["lead_name"],
-        booking["preferred_datetime"],
+        booking["preferred_dates"] or ([booking["preferred_datetime"]] if booking["preferred_datetime"] else []),
         booking["lead_contact"],
+        booking["family_email"],
     )
     to_address = contact.get("email", "") or ""
+    cc_address = booking["family_email"] or ""
     return render_template(
         "compose_trial_email.html",
         booking=booking,
         subject=subject,
         body=body,
         to_address=to_address,
-        mailto=trial_email.mailto_link(to_address, subject, body),
+        cc_address=cc_address,
+        mailto=trial_email.mailto_link(to_address, subject, body, cc_address),
     )
 
 

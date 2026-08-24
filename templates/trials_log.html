@@ -10,7 +10,7 @@
     <tr>
       <th>Clinic</th>
       <th>Lead</th>
-      <th>Preferred date/time</th>
+      <th>Preferred dates</th>
       <th>Lead contact</th>
       <th>Booked on</th>
       <th></th>
@@ -21,7 +21,7 @@
       <tr>
         <td>{{ b.clinic_name }}</td>
         <td>{{ b.lead_name }}</td>
-        <td>{{ b.preferred_datetime or '—' }}</td>
+        <td>{{ b.preferred_dates|join(', ') if b.preferred_dates else (b.preferred_datetime or '—') }}</td>
         <td>{{ b.lead_contact or '—' }}</td>
         <td>{{ b.created_at }}</td>
         <td><a href="{{ url_for('trial_email_preview', booking_id=b.id) }}">View email</a></td>

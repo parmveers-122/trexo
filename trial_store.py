@@ -10,6 +10,7 @@ the user) - contact info (email/phone/address) isn't known yet, so it's
 editable per-clinic and stored locally rather than guessed.
 """
 
+import json
 import os
 import sqlite3
 
@@ -106,7 +107,7 @@ CLINICS = [
         "address": "2339 2nd Ave, Regina, SK",
         "lat": 50.4664628,
         "lon": -104.6169265,
-        "device_size": "Medium",
+        "device_size": "Medium/XL",
         "free_trial": False,
     },
     {
@@ -147,11 +148,21 @@ def init_db():
             clinic_name TEXT NOT NULL,
             lead_name TEXT NOT NULL,
             preferred_datetime TEXT,
+            preferred_dates TEXT,
             lead_contact TEXT,
+            family_email TEXT,
             created_at TEXT NOT NULL
         )
         """
     )
+    # preferred_dates/family_email were added after the initial schema - older
+    # local/deployed databases won't have them yet, so add if missing rather
+    # than dropping and recreating the table (which would lose bookings).
+    existing_columns = {row["name"] for row in conn.execute("PRAGMA table_info(trial_bookings)")}
+    if "preferred_dates" not in existing_columns:
+        conn.execute("ALTER TABLE trial_bookings ADD COLUMN preferred_dates TEXT")
+    if "family_email" not in existing_columns:
+        conn.execute("ALTER TABLE trial_bookings ADD COLUMN family_email TEXT")
     conn.commit()
     conn.close()
 
@@ -186,15 +197,16 @@ def save_clinic_contact(clinic_id, email, phone, updated_at):
     conn.close()
 
 
-def add_trial_booking(clinic_id, clinic_name, lead_name, preferred_datetime, lead_contact, created_at):
+def add_trial_booking(clinic_id, clinic_name, lead_name, preferred_dates, lead_contact, family_email, created_at):
+    """preferred_dates is a list of ISO date strings (e.g. ["2026-08-26"])."""
     conn = _get_conn()
     cursor = conn.execute(
         """
         INSERT INTO trial_bookings
-            (clinic_id, clinic_name, lead_name, preferred_datetime, lead_contact, created_at)
-        VALUES (?, ?, ?, ?, ?, ?)
+            (clinic_id, clinic_name, lead_name, preferred_dates, lead_contact, family_email, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         """,
-        (clinic_id, clinic_name, lead_name, preferred_datetime or None, lead_contact or None, created_at),
+        (clinic_id, clinic_name, lead_name, json.dumps(preferred_dates), lead_contact or None, family_email or None, created_at),
     )
     conn.commit()
     booking_id = cursor.lastrowid
@@ -202,11 +214,20 @@ def add_trial_booking(clinic_id, clinic_name, lead_name, preferred_datetime, lea
     return booking_id
 
 
+def _with_parsed_dates(row):
+    booking = dict(row)
+    try:
+        booking["preferred_dates"] = json.loads(booking["preferred_dates"]) if booking["preferred_dates"] else []
+    except (TypeError, ValueError):
+        booking["preferred_dates"] = []
+    return booking
+
+
 def get_trial_booking(booking_id):
     conn = _get_conn()
     row = conn.execute("SELECT * FROM trial_bookings WHERE id = ?", (booking_id,)).fetchone()
     conn.close()
-    return dict(row) if row else None
+    return _with_parsed_dates(row) if row else None
 
 
 def list_trial_bookings(limit=200):
@@ -215,7 +236,7 @@ def list_trial_bookings(limit=200):
         "SELECT * FROM trial_bookings ORDER BY id DESC LIMIT ?", (limit,)
     ).fetchall()
     conn.close()
-    return [dict(r) for r in rows]
+    return [_with_parsed_dates(r) for r in rows]
 
 
 def count_trial_bookings_for_clinic(clinic_id):

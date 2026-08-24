@@ -11,13 +11,53 @@
   <label>Lead / patient name</label>
   <input type="text" name="lead_name" placeholder="e.g. Jane Doe" required>
 
-  <label>Preferred date/time</label>
-  <input type="text" name="preferred_datetime" placeholder="e.g. Tues Aug 26, afternoon">
+  <label>Preferred dates</label>
+  <p class="subtle field-hint">Add every date the family is available - the clinic can pick whichever works.</p>
+  <div id="preferred-dates-list" class="preferred-dates-list">
+    <div class="preferred-date-row">
+      <input type="date" name="preferred_dates" required>
+      <button type="button" class="btn-remove-date" aria-label="Remove date" disabled>&times;</button>
+    </div>
+  </div>
+  <button type="button" id="add-date-btn" class="btn-link btn-small btn-add-date">+ Add another date</button>
 
   <label>Lead contact info</label>
   <input type="text" name="lead_contact" placeholder="Phone or email">
 
+  <label>Family email</label>
+  <p class="subtle field-hint">We're just facilitating - the family is included on this email so they can confirm the best date/time directly with the clinic.</p>
+  <input type="email" name="family_email" placeholder="family@example.com">
+
   <button type="submit" class="btn-primary">Generate Trial Request Email</button>
 </form>
+
+<script>
+  (function () {
+    var list = document.getElementById('preferred-dates-list');
+    var addBtn = document.getElementById('add-date-btn');
+
+    function updateRemoveButtons() {
+      var rows = list.querySelectorAll('.preferred-date-row');
+      rows.forEach(function (row) {
+        row.querySelector('.btn-remove-date').disabled = rows.length === 1;
+      });
+    }
+
+    addBtn.addEventListener('click', function () {
+      var row = document.createElement('div');
+      row.className = 'preferred-date-row';
+      row.innerHTML = '<input type="date" name="preferred_dates" required>' +
+        '<button type="button" class="btn-remove-date" aria-label="Remove date">&times;</button>';
+      list.appendChild(row);
+      updateRemoveButtons();
+    });
+
+    list.addEventListener('click', function (e) {
+      if (!e.target.classList.contains('btn-remove-date') || e.target.disabled) return;
+      e.target.closest('.preferred-date-row').remove();
+      updateRemoveButtons();
+    });
+  })();
+</script>
 
 {% endblock %}
