@@ -6,6 +6,11 @@
 
 <h1>Book a Trial</h1>
 <p class="subtle">at {{ clinic.name }}</p>
+{% if clinic.trial_details %}
+  <ul class="trial-details trial-details-panel">
+    {% for detail in clinic.trial_details %}<li>{{ detail }}</li>{% endfor %}
+  </ul>
+{% endif %}
 
 <form method="post" class="trial-form">
   <label>Lead / patient name</label>

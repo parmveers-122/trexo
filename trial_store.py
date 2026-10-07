@@ -108,7 +108,15 @@ CLINICS = [
         "lat": 50.4664628,
         "lon": -104.6169265,
         "device_size": "Medium/XL",
-        "free_trial": False,
+        "free_trial": True,
+        "default_email": "sandim@fswcregina.ca",
+        "trial_details": [
+            "Trials available Monday-Friday",
+            "Average trial length: 60 minutes",
+            "First trial is free",
+            "Trial can't be claimed through insurance",
+            "No cancellation fee",
+        ],
     },
     {
         "id": "canadian-centre-development-calgary",
@@ -177,7 +185,13 @@ def get_clinic_contact(clinic_id):
         "SELECT * FROM clinic_contacts WHERE clinic_id = ?", (clinic_id,)
     ).fetchone()
     conn.close()
-    return dict(row) if row else {}
+    contact = dict(row) if row else {}
+    # Fall back to the email hardcoded on the clinic (survives Vercel's wiped
+    # /tmp db); an email saved through the UI still takes priority.
+    clinic = get_clinic_by_id(clinic_id)
+    if clinic and clinic.get("default_email") and not contact.get("email"):
+        contact["email"] = clinic["default_email"]
+    return contact
 
 
 def save_clinic_contact(clinic_id, email, phone, updated_at):

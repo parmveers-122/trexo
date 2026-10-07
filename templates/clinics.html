@@ -36,11 +36,16 @@
           <span class="clinic-device-size">{{ clinic.device_size }} Trexo</span>
         {% endif %}
         {% if clinic.free_trial %}
-          <span class="clinic-free-trial">Free Trial</span>
+          <span class="clinic-free-trial">First Trial Free</span>
         {% endif %}
       </div>
 
       <div class="clinic-address">{{ clinic.address }}</div>
+      {% if clinic.trial_details %}
+        <ul class="trial-details">
+          {% for detail in clinic.trial_details %}<li>{{ detail }}</li>{% endfor %}
+        </ul>
+      {% endif %}
       {% if clinic.distance_km is not none %}
         <div class="clinic-distance">{{ "%.1f"|format(clinic.distance_km) }} km from the address searched</div>
       {% endif %}

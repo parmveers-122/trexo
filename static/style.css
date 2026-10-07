@@ -112,6 +112,15 @@ h2 { font-size: 15px; font-weight: 700; margin-top: 0; margin-bottom: 8px; }
   border-radius: 999px;
 }
 .clinic-address { font-size: 13px; color: var(--text); }
+.trial-details { margin: 0; padding-left: 18px; font-size: 12.5px; color: var(--subtle); line-height: 1.55; }
+.trial-details-panel {
+  max-width: 560px;
+  margin-top: 14px;
+  padding: 12px 14px 12px 32px;
+  background: var(--primary-tint);
+  border-radius: var(--radius-md);
+  color: var(--primary-dark);
+}
 .clinic-distance {
   display: inline-block;
   width: fit-content;
