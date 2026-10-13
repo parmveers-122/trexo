@@ -3,7 +3,6 @@ import os
 
 from flask import Flask, flash, redirect, render_template, request, url_for
 
-import auth
 import geocode
 import trial_email
 import trial_store
@@ -13,7 +12,7 @@ import trial_store
 # why the CSS wasn't loading there.
 _BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(__name__, static_folder=os.path.join(_BASE_DIR, "static"), static_url_path="/static")
-auth.init_auth(app)  # Google sign-in (@trexorobotics.com) + session secret key
+app.secret_key = "dev-only-not-for-production"
 trial_store.init_db()
 
 
