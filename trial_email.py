@@ -26,7 +26,7 @@ def format_preferred_dates(preferred_dates):
 
 
 def render_trial_email(clinic_name, lead_name, parent_name, preferred_dates, family_email=None):
-    subject = f"Trexo Device Trial Request - {lead_name}"
+    subject = f"Trexo Trial Request - {lead_name}"
 
     if family_email:
         scheduling_line = (
@@ -43,7 +43,7 @@ def render_trial_email(clinic_name, lead_name, parent_name, preferred_dates, fam
     lines = [
         f"Hi {clinic_name} team,",
         "",
-        f"We'd like to schedule a Trexo device trial at your clinic for {lead_name}.",
+        f"We'd like to request a Trexo trial at your clinic for {lead_name}.",
         "",
         f"Child's name: {lead_name}",
         f"Parent's name: {parent_name or 'N/A'}",
