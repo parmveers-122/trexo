@@ -111,7 +111,7 @@ CLINICS = [
         "free_trial": True,
         "default_email": "sandim@fswcregina.ca",
         "trial_details": [
-            "Trials available Monday-Friday",
+            "Trials available Monday-Friday, 8 AM - 6 PM",
             "Average trial length: 60 minutes",
             "First trial is free",
             "Trial can't be claimed through insurance",
