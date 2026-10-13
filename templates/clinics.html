@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Clinics - Trial Booking{% endblock %}
+{% block title %}Clinics - Trial Requests{% endblock %}
 {% block content %}
 
 <h1>Clinic Network</h1>
-<p class="subtle">Book a device trial at one of our partner clinics for a lead.</p>
+<p class="subtle">Request a Trexo trial at one of our partner clinics for a lead.</p>
 
 <form method="get" class="lead-address-search">
   <label>Find the nearest clinic to a lead's address</label>
@@ -27,7 +27,7 @@
       <div class="clinic-card-header">
         <h2 class="clinic-name">{{ clinic.name }}</h2>
         {% if clinic.trial_count %}
-          <span class="clinic-trial-badge">{{ clinic.trial_count }} booked</span>
+          <span class="clinic-trial-badge">{{ clinic.trial_count }} requested</span>
         {% endif %}
       </div>
 
@@ -51,7 +51,7 @@
       {% endif %}
 
       {% if clinic.is_internal %}
-        <div class="clinic-contact-summary subtle">Our own office - book directly through the online link.</div>
+        <div class="clinic-contact-summary subtle">Our own office - request directly through the online link.</div>
       {% else %}
         <div class="clinic-contact-summary">
           {% if clinic.contact.email or clinic.contact.phone %}
@@ -64,9 +64,9 @@
       {% endif %}
 
       {% if clinic.bookable and clinic.booking_link %}
-        <a href="{{ clinic.booking_link }}" target="_blank" rel="noopener" class="btn-primary">Book a Trial &#8599;</a>
+        <a href="{{ clinic.booking_link }}" target="_blank" rel="noopener" class="btn-primary">Request a Trial &#8599;</a>
       {% elif clinic.bookable %}
-        <a href="{{ url_for('book_trial', clinic_id=clinic.id) }}" class="btn-primary">Book a Trial</a>
+        <a href="{{ url_for('book_trial', clinic_id=clinic.id) }}" class="btn-primary">Request a Trial</a>
       {% else %}
         <span class="btn-primary btn-disabled" aria-disabled="true">Not available yet</span>
       {% endif %}

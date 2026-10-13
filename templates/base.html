@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Clinic Trial Booking{% endblock %}</title>
+  <title>{% block title %}Clinic Trial Requests{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <header class="topbar">
-    <a href="{{ url_for('clinic_directory') }}" class="brand">Trexo Clinic Trial Booking</a>
+    <a href="{{ url_for('clinic_directory') }}" class="brand">Trexo Clinic Trial Requests</a>
     <nav class="topnav">
       <a href="{{ url_for('clinic_directory') }}">Clinics</a>
-      <a href="{{ url_for('trials_log') }}">Booked Trials</a>
+      <a href="{{ url_for('trials_log') }}">Requested Trials</a>
     </nav>
   </header>
 

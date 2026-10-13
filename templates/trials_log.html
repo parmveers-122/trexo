@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Booked Trials{% endblock %}
+{% block title %}Requested Trials{% endblock %}
 {% block content %}
 
-<h1>Booked Trials</h1>
-<p class="subtle">{{ bookings|length }} trial{{ '' if bookings|length == 1 else 's' }} booked so far</p>
+<h1>Requested Trials</h1>
+<p class="subtle">{{ bookings|length }} trial{{ '' if bookings|length == 1 else 's' }} requested so far</p>
 
 <table class="worklist">
   <thead>
@@ -13,7 +13,7 @@
       <th>Parent</th>
       <th>Preferred dates</th>
       <th>Family email</th>
-      <th>Booked on</th>
+      <th>Requested on</th>
       <th></th>
     </tr>
   </thead>
@@ -29,7 +29,7 @@
         <td><a href="{{ url_for('trial_email_preview', booking_id=b.id) }}">View email</a></td>
       </tr>
     {% else %}
-      <tr><td colspan="7">No trials booked yet.</td></tr>
+      <tr><td colspan="7">No trials requested yet.</td></tr>
     {% endfor %}
   </tbody>
 </table>

@@ -1,4 +1,4 @@
-# Clinic Trial Booking (prototype)
+# Clinic Trial Requests (prototype)
 
 A standalone prototype for sales reps: browse the clinic network, book a
 device trial for a lead at a clinic, and get a draft email ready to send.
@@ -23,12 +23,12 @@ Visit http://localhost:5060.
 ## What's here
 
 - **Clinic directory** (`/`) - the clinic network as cards, each with an
-  optional editable contact info block and a "Book a Trial" button.
-- **Book a Trial** - enter the lead's name, preferred date/time, and contact
+  optional editable contact info block and a "Request a Trial" button.
+- **Request a Trial** - enter the lead's name, preferred date/time, and contact
   info for a given clinic.
 - **Trial email** - a drafted request email to that clinic, editable, with
   an "Open in Email App" button (mailto link).
-- **Booked Trials** (`/trials`) - a log of every trial booked so far.
+- **Requested Trials** (`/trials`) - a log of every trial requested so far.
 
 ## Notes for later
 

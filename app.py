@@ -83,7 +83,7 @@ def book_trial(clinic_id):
         return redirect(url_for("clinic_directory"))
 
     if not clinic["bookable"]:
-        flash(f"{clinic['name']} isn't available for trial booking yet.", "error")
+        flash(f"{clinic['name']} isn't available for trial requests yet.", "error")
         return redirect(url_for("clinic_directory"))
 
     if clinic.get("booking_link"):
@@ -115,7 +115,7 @@ def book_trial(clinic_id):
 
         if clinic.get("is_internal"):
             # Our own office - no external clinic to email, just log the booking.
-            flash(f"Trial booked at {clinic['name']} for {lead_name}.", "success")
+            flash(f"Trial requested at {clinic['name']} for {lead_name}.", "success")
             return redirect(url_for("trials_log"))
 
         return redirect(url_for("trial_email_preview", booking_id=booking_id))
@@ -127,7 +127,7 @@ def book_trial(clinic_id):
 def trial_email_preview(booking_id):
     booking = trial_store.get_trial_booking(booking_id)
     if not booking:
-        flash("Booking not found.", "error")
+        flash("Trial request not found.", "error")
         return redirect(url_for("clinic_directory"))
 
     contact = trial_store.get_clinic_contact(booking["clinic_id"])
