@@ -42,6 +42,20 @@ body {
 .topnav { display: flex; gap: 20px; }
 .topnav a { color: #cbd0dc; text-decoration: none; font-size: 13px; font-weight: 600; }
 .topnav a:hover { color: #fff; }
+.topnav { align-items: center; }
+.topnav-user { color: #8b91a1; font-size: 12px; }
+
+.login-card {
+  max-width: 380px;
+  margin: 60px auto 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+}
+.login-btn { display: block; margin-top: 18px; padding: 11px 18px; }
 
 .content { max-width: 1000px; margin: 0 auto; padding: 28px 24px 48px; }
 

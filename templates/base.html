@@ -12,6 +12,10 @@
     <nav class="topnav">
       <a href="{{ url_for('clinic_directory') }}">Clinics</a>
       <a href="{{ url_for('trials_log') }}">Booked Trials</a>
+      {% if current_user %}
+        <span class="topnav-user">{{ current_user.email }}</span>
+        <a href="{{ url_for('logout') }}">Sign out</a>
+      {% endif %}
     </nav>
   </header>
 
