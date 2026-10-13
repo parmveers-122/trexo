@@ -16,9 +16,9 @@
   {% endif %}
 
   <label>Cc</label>
-  <input type="email" id="email-cc" value="{{ cc_address }}" placeholder="Family's email...">
-  {% if not cc_address %}
-    <p class="subtle email-gmail-warning">No family email on file - add one here so they're included on the thread, or leave blank to send to the clinic only.</p>
+  <input type="email" id="email-cc" value="{{ cc_address }}" multiple placeholder="Family's email...">
+  {% if not booking.family_email %}
+    <p class="subtle email-gmail-warning">No family email on file - add one here (separate addresses with a comma) so they're included on the thread.</p>
   {% endif %}
 
   <label>Subject</label>

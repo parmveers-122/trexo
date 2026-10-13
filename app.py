@@ -15,6 +15,8 @@ app = Flask(__name__, static_folder=os.path.join(_BASE_DIR, "static"), static_ur
 app.secret_key = "dev-only-not-for-production"
 trial_store.init_db()
 
+SALES_CC_EMAIL = "sales@trexorobotics.com"
+
 
 @app.route("/")
 def clinic_directory():
@@ -137,7 +139,8 @@ def trial_email_preview(booking_id):
         booking["family_email"],
     )
     to_address = contact.get("email", "") or ""
-    cc_address = booking["family_email"] or ""
+    # Family plus the shared sales mailbox, so sales@ keeps a copy of every request.
+    cc_address = ", ".join(a for a in (booking["family_email"], SALES_CC_EMAIL) if a)
     return render_template(
         "compose_trial_email.html",
         booking=booking,
