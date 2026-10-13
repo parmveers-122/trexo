@@ -129,6 +129,12 @@ CLINICS = [
     },
 ]
 
+# Only clinics whose info we have in full can be booked for now - the rest
+# show greyed out in the directory. Add a clinic id here to enable it.
+BOOKABLE_CLINIC_IDS = {"first-steps-wellness-regina"}
+for _clinic in CLINICS:
+    _clinic["bookable"] = _clinic["id"] in BOOKABLE_CLINIC_IDS
+
 
 def _get_conn():
     conn = sqlite3.connect(DB_PATH)

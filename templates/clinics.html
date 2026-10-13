@@ -23,7 +23,7 @@
 
 <div class="clinic-grid">
   {% for clinic in clinics %}
-    <div class="clinic-card">
+    <div class="clinic-card{{ '' if clinic.bookable else ' clinic-card-disabled' }}">
       <div class="clinic-card-header">
         <h2 class="clinic-name">{{ clinic.name }}</h2>
         {% if clinic.trial_count %}
@@ -63,9 +63,13 @@
         </div>
       {% endif %}
 
-      <a href="{{ url_for('book_trial', clinic_id=clinic.id) }}" class="btn-primary">Book a Trial</a>
+      {% if clinic.bookable %}
+        <a href="{{ url_for('book_trial', clinic_id=clinic.id) }}" class="btn-primary">Book a Trial</a>
+      {% else %}
+        <span class="btn-primary btn-disabled" aria-disabled="true">Not available yet</span>
+      {% endif %}
 
-      {% if not clinic.is_internal %}
+      {% if clinic.bookable and not clinic.is_internal %}
         <details class="edit-contact-toggle">
           <summary>Edit contact info</summary>
           <form method="post" action="{{ url_for('save_clinic_contact', clinic_id=clinic.id) }}" class="edit-contact-form">

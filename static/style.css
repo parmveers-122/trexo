@@ -74,6 +74,13 @@ h2 { font-size: 15px; font-weight: 700; margin-top: 0; margin-bottom: 8px; }
   transition: box-shadow 0.15s ease;
 }
 .clinic-card:hover { box-shadow: var(--shadow-md); }
+.clinic-card-disabled { opacity: 0.5; filter: grayscale(1); background: #f3f4f6; }
+.clinic-card-disabled:hover { box-shadow: var(--shadow-sm); }
+.btn-disabled, .btn-disabled:hover {
+  background: #9ca3af;
+  box-shadow: none;
+  cursor: not-allowed;
+}
 .clinic-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
 .clinic-name { font-size: 16px; margin: 0; }
 .clinic-trial-badge {

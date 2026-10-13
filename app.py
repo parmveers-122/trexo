@@ -45,6 +45,9 @@ def clinic_directory():
     if lead_coords:
         clinics.sort(key=lambda c: c["distance_km"])
 
+    # Bookable clinics first (stable sort keeps the distance/default order within each group).
+    clinics.sort(key=lambda c: not c["bookable"])
+
     return render_template(
         "clinics.html",
         clinics=clinics,
@@ -75,6 +78,10 @@ def book_trial(clinic_id):
     clinic = trial_store.get_clinic_by_id(clinic_id)
     if not clinic:
         flash("Unknown clinic.", "error")
+        return redirect(url_for("clinic_directory"))
+
+    if not clinic["bookable"]:
+        flash(f"{clinic['name']} isn't available for trial booking yet.", "error")
         return redirect(url_for("clinic_directory"))
 
     if request.method == "POST":
