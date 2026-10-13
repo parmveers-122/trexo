@@ -6,7 +6,7 @@
 
 <h1>Trial Request Email</h1>
 <p class="subtle">{{ booking.clinic_name }} &middot; {{ booking.lead_name }}</p>
-<p class="subtle">This is a drafted email - review and edit before sending. Nothing sends automatically; clicking "Send from {{ sender_email }}" opens this draft in Gmail, and you click Send there.</p>
+<p class="subtle">This is a drafted email - review and edit before sending. Nothing sends automatically; clicking "Open in Gmail" opens this draft in your own Gmail, and you click Send there.</p>
 
 <form class="trial-email-form" onsubmit="return false;">
   <label>To</label>
@@ -27,16 +27,14 @@
   <label>Body</label>
   <textarea id="email-body" rows="12">{{ body }}</textarea>
 
-  <button type="button" class="btn-primary" id="open-gmail-btn">Send from {{ sender_email }} &#8599;</button>
-  <p class="subtle email-gmail-warning">Opens Gmail in a new tab as {{ sender_email }} - you need to be signed in to that mailbox in this browser.
+  <button type="button" class="btn-primary" id="open-gmail-btn">Open in Gmail &#8599;</button>
+  <p class="subtle email-gmail-warning">Opens a draft in your Gmail in a new tab.
     <a href="#" id="open-email-btn">Use my default email app instead</a></p>
 </form>
 
 <p class="subtle"><a href="{{ url_for('trials_log') }}">View all booked trials &rarr;</a></p>
 
 <script>
-  var SENDER = {{ sender_email|tojson }};
-
   function readDraft() {
     var draft = {
       to: document.getElementById('email-to').value.trim(),
@@ -54,8 +52,8 @@
   document.getElementById('open-gmail-btn').addEventListener('click', function () {
     var d = readDraft();
     if (!d) return;
-    // authuser picks the sales@ account when it's signed in to this browser's Gmail.
-    var url = 'https://mail.google.com/mail/?view=cm&fs=1&authuser=' + encodeURIComponent(SENDER) +
+    // No account is forced, so Gmail opens in the rep's own (default) account.
+    var url = 'https://mail.google.com/mail/?view=cm&fs=1' +
       '&to=' + encodeURIComponent(d.to) +
       '&su=' + encodeURIComponent(d.subject) +
       '&body=' + encodeURIComponent(d.body);

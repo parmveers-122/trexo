@@ -15,9 +15,6 @@ app = Flask(__name__, static_folder=os.path.join(_BASE_DIR, "static"), static_ur
 app.secret_key = "dev-only-not-for-production"
 trial_store.init_db()
 
-# Shared mailbox trial requests go out from (opened in Gmail, not sent by the app).
-SENDER_EMAIL = "sales@trexorobotics.com"
-
 
 @app.route("/")
 def clinic_directory():
@@ -148,7 +145,6 @@ def trial_email_preview(booking_id):
         body=body,
         to_address=to_address,
         cc_address=cc_address,
-        sender_email=SENDER_EMAIL,
         mailto=trial_email.mailto_link(to_address, subject, body, cc_address),
     )
 
