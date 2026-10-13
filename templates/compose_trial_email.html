@@ -6,7 +6,7 @@
 
 <h1>Trial Request Email</h1>
 <p class="subtle">{{ booking.clinic_name }} &middot; {{ booking.lead_name }}</p>
-<p class="subtle">This is a drafted email - review and edit before sending. Nothing sends automatically; clicking "Open in Email App" hands off to your own email client.</p>
+<p class="subtle">This is a drafted email - review and edit before sending. Nothing sends automatically; clicking "Send from {{ sender_email }}" opens this draft in Gmail, and you click Send there.</p>
 
 <form class="trial-email-form" onsubmit="return false;">
   <label>To</label>
@@ -27,21 +27,49 @@
   <label>Body</label>
   <textarea id="email-body" rows="12">{{ body }}</textarea>
 
-  <button type="button" class="btn-primary" id="open-email-btn">Open in Email App</button>
+  <button type="button" class="btn-primary" id="open-gmail-btn">Send from {{ sender_email }} &#8599;</button>
+  <p class="subtle email-gmail-warning">Opens Gmail in a new tab as {{ sender_email }} - you need to be signed in to that mailbox in this browser.
+    <a href="#" id="open-email-btn">Use my default email app instead</a></p>
 </form>
 
 <p class="subtle"><a href="{{ url_for('trials_log') }}">View all booked trials &rarr;</a></p>
 
 <script>
-  document.getElementById('open-email-btn').addEventListener('click', function () {
-    var to = document.getElementById('email-to').value.trim();
-    var cc = document.getElementById('email-cc').value.trim();
-    var subject = document.getElementById('email-subject').value;
-    var body = document.getElementById('email-body').value;
-    if (!to) {
+  var SENDER = {{ sender_email|tojson }};
+
+  function readDraft() {
+    var draft = {
+      to: document.getElementById('email-to').value.trim(),
+      cc: document.getElementById('email-cc').value.trim(),
+      subject: document.getElementById('email-subject').value,
+      body: document.getElementById('email-body').value
+    };
+    if (!draft.to) {
       alert('Enter the clinic\'s email address first.');
-      return;
+      return null;
     }
+    return draft;
+  }
+
+  document.getElementById('open-gmail-btn').addEventListener('click', function () {
+    var d = readDraft();
+    if (!d) return;
+    // authuser picks the sales@ account when it's signed in to this browser's Gmail.
+    var url = 'https://mail.google.com/mail/?view=cm&fs=1&authuser=' + encodeURIComponent(SENDER) +
+      '&to=' + encodeURIComponent(d.to) +
+      '&su=' + encodeURIComponent(d.subject) +
+      '&body=' + encodeURIComponent(d.body);
+    if (d.cc) {
+      url += '&cc=' + encodeURIComponent(d.cc);
+    }
+    window.open(url, '_blank', 'noopener');
+  });
+
+  document.getElementById('open-email-btn').addEventListener('click', function (e) {
+    e.preventDefault();
+    var d = readDraft();
+    if (!d) return;
+    var to = d.to, cc = d.cc, subject = d.subject, body = d.body;
     var mailto = 'mailto:' + to +
       '?subject=' + encodeURIComponent(subject) +
       '&body=' + encodeURIComponent(body);
