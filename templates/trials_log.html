@@ -9,9 +9,10 @@
   <thead>
     <tr>
       <th>Clinic</th>
-      <th>Lead</th>
+      <th>Child</th>
+      <th>Parent</th>
       <th>Preferred dates</th>
-      <th>Lead contact</th>
+      <th>Family email</th>
       <th>Booked on</th>
       <th></th>
     </tr>
@@ -21,13 +22,14 @@
       <tr>
         <td>{{ b.clinic_name }}</td>
         <td>{{ b.lead_name }}</td>
+        <td>{{ b.parent_name or '—' }}</td>
         <td>{{ b.preferred_dates|join(', ') if b.preferred_dates else (b.preferred_datetime or '—') }}</td>
-        <td>{{ b.lead_contact or '—' }}</td>
+        <td>{{ b.family_email or b.lead_contact or '—' }}</td>
         <td>{{ b.created_at }}</td>
         <td><a href="{{ url_for('trial_email_preview', booking_id=b.id) }}">View email</a></td>
       </tr>
     {% else %}
-      <tr><td colspan="6">No trials booked yet.</td></tr>
+      <tr><td colspan="7">No trials booked yet.</td></tr>
     {% endfor %}
   </tbody>
 </table>

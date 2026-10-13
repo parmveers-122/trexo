@@ -86,8 +86,10 @@ def book_trial(clinic_id):
 
     if request.method == "POST":
         lead_name = request.form.get("lead_name", "").strip()
-        if not lead_name:
-            flash("Lead/patient name is required.", "error")
+        parent_name = request.form.get("parent_name", "").strip()
+        family_email = request.form.get("family_email", "").strip()
+        if not lead_name or not parent_name or not family_email:
+            flash("Child's name, parent's name and family email are required.", "error")
             return redirect(url_for("book_trial", clinic_id=clinic_id))
 
         preferred_dates = sorted({d for d in request.form.getlist("preferred_dates") if d.strip()})
@@ -99,9 +101,9 @@ def book_trial(clinic_id):
             clinic_id,
             clinic["name"],
             lead_name,
+            parent_name,
             preferred_dates,
-            request.form.get("lead_contact", "").strip(),
-            request.form.get("family_email", "").strip(),
+            family_email,
             datetime.datetime.now().isoformat(timespec="minutes"),
         )
 
@@ -126,8 +128,8 @@ def trial_email_preview(booking_id):
     subject, body = trial_email.render_trial_email(
         booking["clinic_name"],
         booking["lead_name"],
+        booking["parent_name"],
         booking["preferred_dates"] or ([booking["preferred_datetime"]] if booking["preferred_datetime"] else []),
-        booking["lead_contact"],
         booking["family_email"],
     )
     to_address = contact.get("email", "") or ""

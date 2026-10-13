@@ -164,6 +164,7 @@ def init_db():
             preferred_datetime TEXT,
             preferred_dates TEXT,
             lead_contact TEXT,
+            parent_name TEXT,
             family_email TEXT,
             created_at TEXT NOT NULL
         )
@@ -175,6 +176,8 @@ def init_db():
     existing_columns = {row["name"] for row in conn.execute("PRAGMA table_info(trial_bookings)")}
     if "preferred_dates" not in existing_columns:
         conn.execute("ALTER TABLE trial_bookings ADD COLUMN preferred_dates TEXT")
+    if "parent_name" not in existing_columns:
+        conn.execute("ALTER TABLE trial_bookings ADD COLUMN parent_name TEXT")
     if "family_email" not in existing_columns:
         conn.execute("ALTER TABLE trial_bookings ADD COLUMN family_email TEXT")
     conn.commit()
@@ -217,16 +220,16 @@ def save_clinic_contact(clinic_id, email, phone, updated_at):
     conn.close()
 
 
-def add_trial_booking(clinic_id, clinic_name, lead_name, preferred_dates, lead_contact, family_email, created_at):
-    """preferred_dates is a list of ISO date strings (e.g. ["2026-08-26"])."""
+def add_trial_booking(clinic_id, clinic_name, lead_name, parent_name, preferred_dates, family_email, created_at):
+    """lead_name is the child's name. preferred_dates is a list of ISO date strings (e.g. ["2026-08-26"])."""
     conn = _get_conn()
     cursor = conn.execute(
         """
         INSERT INTO trial_bookings
-            (clinic_id, clinic_name, lead_name, preferred_dates, lead_contact, family_email, created_at)
+            (clinic_id, clinic_name, lead_name, parent_name, preferred_dates, family_email, created_at)
         VALUES (?, ?, ?, ?, ?, ?, ?)
         """,
-        (clinic_id, clinic_name, lead_name, json.dumps(preferred_dates), lead_contact or None, family_email or None, created_at),
+        (clinic_id, clinic_name, lead_name, parent_name or None, json.dumps(preferred_dates), family_email or None, created_at),
     )
     conn.commit()
     booking_id = cursor.lastrowid

@@ -13,8 +13,11 @@
 {% endif %}
 
 <form method="post" class="trial-form">
-  <label>Lead / patient name</label>
+  <label>Child's name</label>
   <input type="text" name="lead_name" placeholder="e.g. Jane Doe" required>
+
+  <label>Parent's name</label>
+  <input type="text" name="parent_name" placeholder="e.g. John Doe" required>
 
   <label>Preferred dates</label>
   <p class="subtle field-hint">Add every date the family is available - the clinic can pick whichever works.</p>
@@ -26,12 +29,9 @@
   </div>
   <button type="button" id="add-date-btn" class="btn-link btn-small btn-add-date">+ Add another date</button>
 
-  <label>Lead contact info</label>
-  <input type="text" name="lead_contact" placeholder="Phone or email">
-
   <label>Family email</label>
   <p class="subtle field-hint">We're just facilitating - the family is included on this email so they can confirm the best date/time directly with the clinic.</p>
-  <input type="email" name="family_email" placeholder="family@example.com">
+  <input type="email" name="family_email" placeholder="family@example.com" required>
 
   <button type="submit" class="btn-primary">Generate Trial Request Email</button>
 </form>
