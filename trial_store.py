@@ -37,6 +37,8 @@ CLINICS = [
         "device_size": "S/M/L/XL",
         "free_trial": True,
         "is_internal": True,
+        # PLACEHOLDER - swap in the real head office booking link.
+        "booking_link": "https://example.com/book-a-trexo-trial",
     },
     {
         "id": "kids-physio-montreal",

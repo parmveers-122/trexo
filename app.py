@@ -84,6 +84,10 @@ def book_trial(clinic_id):
         flash(f"{clinic['name']} isn't available for trial booking yet.", "error")
         return redirect(url_for("clinic_directory"))
 
+    if clinic.get("booking_link"):
+        # Clinics with their own online booking link skip our form and email draft.
+        return redirect(clinic["booking_link"])
+
     if request.method == "POST":
         lead_name = request.form.get("lead_name", "").strip()
         parent_name = request.form.get("parent_name", "").strip()
