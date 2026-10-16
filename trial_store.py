@@ -113,6 +113,9 @@ CLINICS = [
         "free_trial": True,
         "default_email": "sandim@fswcregina.ca",
         "contact_name": "Sandi",
+        # Python weekday numbers (Mon=0 ... Sun=6) the clinic runs trials on.
+        "available_weekdays": [0, 1, 2, 3, 4],
+        "available_days_label": "Monday-Friday",
         "trial_details": [
             "Trials available Monday-Friday, 8 AM - 6 PM",
             "Average trial length: 60 minutes",

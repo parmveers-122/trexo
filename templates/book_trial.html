@@ -20,8 +20,10 @@
   <input type="text" name="parent_name" required>
 
   <label>Preferred dates</label>
-  <p class="subtle field-hint">Add every date the family is available - the clinic can pick whichever works.</p>
-  <div id="preferred-dates-list" class="preferred-dates-list">
+  <p class="subtle field-hint">Add every date the family is available - the clinic can pick whichever works.
+    {% if clinic.available_days_label %}{{ clinic.name }} only runs trials {{ clinic.available_days_label }}.{% endif %}</p>
+  <div id="preferred-dates-list" class="preferred-dates-list"
+       {% if clinic.available_weekdays %}data-allowed-weekdays="{{ clinic.available_weekdays|tojson|forceescape }}" data-days-label="{{ clinic.available_days_label }}"{% endif %}>
     <div class="preferred-date-row">
       <input type="date" name="preferred_dates" required>
       <button type="button" class="btn-remove-date" aria-label="Remove date" disabled>&times;</button>
@@ -53,6 +55,38 @@
       });
     }
     setMinDates();
+
+    // Some clinics only run trials on certain weekdays. The native date picker
+    // can't grey those days out, so flag a bad pick right away instead.
+    var allowedWeekdays = list.dataset.allowedWeekdays ? JSON.parse(list.dataset.allowedWeekdays) : null;
+    var daysLabel = list.dataset.daysLabel || '';
+
+    function checkWeekday(input) {
+      var row = input.closest('.preferred-date-row');
+      var note = row.querySelector('.date-error');
+      var message = '';
+      if (allowedWeekdays && input.value) {
+        var parts = input.value.split('-');
+        var jsDay = new Date(+parts[0], +parts[1] - 1, +parts[2]).getDay(); // Sun=0
+        var pyDay = (jsDay + 6) % 7;                                       // Mon=0
+        if (allowedWeekdays.indexOf(pyDay) === -1) {
+          message = 'Not available - trials run ' + daysLabel + ' only.';
+        }
+      }
+      input.setCustomValidity(message);
+      if (message && !note) {
+        note = document.createElement('div');
+        note.className = 'date-error';
+        row.appendChild(note);
+      }
+      if (note) {
+        if (message) { note.textContent = message; } else { note.remove(); }
+      }
+    }
+
+    list.addEventListener('input', function (e) {
+      if (e.target.type === 'date') checkWeekday(e.target);
+    });
 
     function updateRemoveButtons() {
       var rows = list.querySelectorAll('.preferred-date-row');

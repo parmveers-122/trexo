@@ -115,6 +115,15 @@ def book_trial(clinic_id):
             flash("Preferred dates can't be in the past.", "error")
             return redirect(url_for("book_trial", clinic_id=clinic_id))
 
+        allowed_weekdays = clinic.get("available_weekdays")
+        if allowed_weekdays and any(d.weekday() not in allowed_weekdays for d in parsed_dates):
+            flash(
+                f"{clinic['name']} only runs trials {clinic['available_days_label']} - "
+                "please remove any other dates.",
+                "error",
+            )
+            return redirect(url_for("book_trial", clinic_id=clinic_id))
+
         booking_id = trial_store.add_trial_booking(
             clinic_id,
             clinic["name"],
