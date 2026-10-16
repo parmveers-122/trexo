@@ -41,6 +41,19 @@
     var list = document.getElementById('preferred-dates-list');
     var addBtn = document.getElementById('add-date-btn');
 
+    // Today in the rep's own timezone (not the server's), as YYYY-MM-DD.
+    var now = new Date();
+    var today = now.getFullYear() + '-' +
+      String(now.getMonth() + 1).padStart(2, '0') + '-' +
+      String(now.getDate()).padStart(2, '0');
+
+    function setMinDates() {
+      list.querySelectorAll('input[type=date]').forEach(function (input) {
+        input.min = today;
+      });
+    }
+    setMinDates();
+
     function updateRemoveButtons() {
       var rows = list.querySelectorAll('.preferred-date-row');
       rows.forEach(function (row) {
@@ -54,6 +67,7 @@
       row.innerHTML = '<input type="date" name="preferred_dates" required>' +
         '<button type="button" class="btn-remove-date" aria-label="Remove date">&times;</button>';
       list.appendChild(row);
+      setMinDates();
       updateRemoveButtons();
     });
 

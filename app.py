@@ -98,9 +98,21 @@ def book_trial(clinic_id):
             flash("Child's name, parent's name and family email are required.", "error")
             return redirect(url_for("book_trial", clinic_id=clinic_id))
 
-        preferred_dates = sorted({d for d in request.form.getlist("preferred_dates") if d.strip()})
+        preferred_dates = sorted({d.strip() for d in request.form.getlist("preferred_dates") if d.strip()})
         if not preferred_dates:
             flash("Pick at least one preferred date.", "error")
+            return redirect(url_for("book_trial", clinic_id=clinic_id))
+
+        try:
+            parsed_dates = [datetime.date.fromisoformat(d) for d in preferred_dates]
+        except ValueError:
+            flash("One of the preferred dates isn't valid.", "error")
+            return redirect(url_for("book_trial", clinic_id=clinic_id))
+        # The server may be on UTC, a day ahead of the rep, so allow yesterday's
+        # server date; the date picker itself already blocks past dates locally.
+        earliest = datetime.date.today() - datetime.timedelta(days=1)
+        if any(d < earliest for d in parsed_dates):
+            flash("Preferred dates can't be in the past.", "error")
             return redirect(url_for("book_trial", clinic_id=clinic_id))
 
         booking_id = trial_store.add_trial_booking(
