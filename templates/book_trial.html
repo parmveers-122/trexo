@@ -20,8 +20,6 @@
   <input type="text" name="parent_name" required>
 
   <label>Preferred dates</label>
-  <p class="subtle field-hint">Add every date the family is available - the clinic can pick whichever works.
-    {% if clinic.available_days_label %}{{ clinic.name }} only runs trials {{ clinic.available_days_label }}.{% endif %}</p>
   <div id="preferred-dates-list" class="preferred-dates-list"
        {% if clinic.available_weekdays %}data-allowed-weekdays="{{ clinic.available_weekdays|tojson|forceescape }}" data-days-label="{{ clinic.available_days_label }}"{% endif %}>
     <div class="preferred-date-row">
