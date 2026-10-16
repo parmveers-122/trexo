@@ -112,6 +112,7 @@ CLINICS = [
         "device_size": "Medium/XL",
         "free_trial": True,
         "default_email": "sandim@fswcregina.ca",
+        "contact_name": "Sandi",
         "trial_details": [
             "Trials available Monday-Friday, 8 AM - 6 PM",
             "Average trial length: 60 minutes",

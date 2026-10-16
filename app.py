@@ -131,12 +131,14 @@ def trial_email_preview(booking_id):
         return redirect(url_for("clinic_directory"))
 
     contact = trial_store.get_clinic_contact(booking["clinic_id"])
+    clinic = trial_store.get_clinic_by_id(booking["clinic_id"]) or {}
     subject, body = trial_email.render_trial_email(
         booking["clinic_name"],
         booking["lead_name"],
         booking["parent_name"],
         booking["preferred_dates"] or ([booking["preferred_datetime"]] if booking["preferred_datetime"] else []),
         booking["family_email"],
+        clinic.get("contact_name"),
     )
     to_address = contact.get("email", "") or ""
     # Family plus the shared sales mailbox, so sales@ keeps a copy of every request.

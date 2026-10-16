@@ -25,36 +25,40 @@ def format_preferred_dates(preferred_dates):
     return ", ".join(dates[:-1]) + f", or {dates[-1]}"
 
 
-def render_trial_email(clinic_name, lead_name, parent_name, preferred_dates, family_email=None):
+def render_trial_email(clinic_name, lead_name, parent_name, preferred_dates, family_email=None, contact_name=None):
     subject = f"Trexo Trial Request - {lead_name}"
+
+    if contact_name:
+        greeting = f"Hi {contact_name} and the {clinic_name} team,"
+    else:
+        greeting = f"Hi {clinic_name} team,"
 
     if family_email:
         scheduling_line = (
-            f"I've included {lead_name}'s family on this email so you can "
-            "coordinate directly and confirm whichever of these dates/times "
-            "works best for everyone."
+            "I've included the family on this email so you can connect with "
+            "them directly and confirm whichever date and time works best."
         )
     else:
         scheduling_line = (
-            "Could you please confirm your availability for one of these dates, "
-            "or let us know a time that works better for your clinic's schedule?"
+            "Could you please let us know which of these dates works for your "
+            "clinic, or suggest a time that suits you better?"
         )
 
     lines = [
-        f"Hi {clinic_name} team,",
+        greeting,
         "",
-        f"We'd like to request a Trexo trial at your clinic for {lead_name}.",
+        "I hope you're doing well! We have a family interested in a Trexo trial at your clinic and would love your help getting it scheduled.",
         "",
         f"Child's name: {lead_name}",
         f"Parent's name: {parent_name or 'N/A'}",
-        f"Preferred date(s): {format_preferred_dates(preferred_dates)}",
         f"Family email: {family_email or 'N/A'}",
+        f"Available dates: {format_preferred_dates(preferred_dates)}",
         "",
         scheduling_line,
         "",
-        f"Thanks so much for partnering with us to support {lead_name} - we really appreciate it!",
+        "Thank you so much for your continued partnership - we really appreciate your help!",
         "",
-        "Best regards,",
+        "Warm regards,",
         "Trexo Robotics Team",
     ]
     body = "\n".join(lines)
